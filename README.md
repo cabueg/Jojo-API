@@ -10,11 +10,19 @@ The end goal for this project is to have an API to call a Jojo character and the
 	"Character": "Character name goes here"
 	{
 		"Stand": "Stand name goes here if applicable"
-		"Abilities":
-		{
-			"Abilities": "Any abilites and description of what ability does goes here.
-		}
+		"Namesake": "Reference to band or singer"
 	}
 }
 
-This already feels complex. I may want to revise how I want the JSON to look afterwards
+Plan: 
+Webscrape the jojo wiki to a database: https://jojo.fandom.com/wiki/Category:Characters
+
+Create an API to get the information from database. 
+
+
+Things I have to learn: 
+
+Beautiful Soup (webscraping)
+SQL (Database)
+Flask (Create API)
+
