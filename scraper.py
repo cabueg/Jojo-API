@@ -10,12 +10,14 @@ character_Name = soup.find('h2', attrs={'data-source' : "title"}).string
 
 
 div = soup.find('div', attrs={'data-source' : "namesake"})
-namesake = div.find("a", {"class": "extiw"}).string
-
-
-
+namesake = div.find_all("a", {"class": "extiw"})
 
 print(character_Name)
-print(namesake)
+for a in namesake:
+    print(a.string)
+
+
+
+# print(namesake)
 
 
