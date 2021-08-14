@@ -1,54 +1,67 @@
-from flask import Flask
-from flask import request
+from enum import unique
+from flask import Flask,request,jsonify
+from sqlalchemy.dialects.postgresql import JSON
 from flask_sqlalchemy import SQLAlchemy
 app = Flask(__name__)
 
 app.config['JSONIFY_PRETTYPRINT_REGULAR']= True
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///data.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///character.db'
 db = SQLAlchemy(app)
 
-class Drink(db.Model):
+class Character(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(80), unique=True, nullable=False)
-    description = db.Column(db.String(120))
+    character_json = db.Column(JSON)
 
     def __repr__(self):
-        return f"{self.name} - {self.description}"
+        return f"{self.character_json['name']} - {self.character_json['stand']} - {self.character_json['namesake']}"
+
 
 @app.route('/')
 def index():
-    return 'Hello!'
+    return 'Jojo!'
 
-@app.route('/drinks')
-def get_drinks():
-    drinks = Drink.query.all() 
+#the website link + '/characters' will run the function below
+@app.route('/characters')
+def get_characters():
+    #grabs all objects created from the class Character
+    characters = Character.query.all()
 
+    #create empty list
     output = []
-    for drink in drinks:
-        drink_data = {'name': drink.name, 'description': drink.description}
 
-        output.append(drink_data)
-    return {"drinks": output}
+    #for each character, create a dictionary with each object's data and append to list
+    for character in characters:
+        character_data = {'name': character.character_json['name'], 
+                          'stand': character.character_json['stand'], 
+                          'namesake': character.character_json['namesake']}
+        output.append(character_data)
 
-@app.route('/drinks/<id>')
-def get_drink(id):
-    drink = Drink.query.get_or_404(id)
-    return {"name": drink.name, "description": drink.description}
+    #return a dictionary with the list
+    return {'characters': output} 
 
-
-@app.route('/drinks', methods=['POST'])
-def add_drink():
-    drink = Drink(name=request.json['name'],
-                  description=request.json['description'])
-    db.session.add(drink)
+@app.route('/characters', methods=['POST'])
+def add_character():
+    character = Character(character_json = request.json)
+    db.session.add(character)
     db.session.commit()
-    return {'id': drink.id}
+    return {'id': character.id}
 
-@app.route('/drinks/<id>', methods=['DELETE'])
-def delete_drink(id):
-    drink = Drink.query.get(id)
-    if drink is None:
+
+@app.route('/characters/<id>')
+def get_character(id):
+    character = Character.query.get_or_404(id)
+    return {"name": character.character_json['name'], 
+            "stand": character.character_json['stand'], 
+            "namesake": character.character_json['namesake']
+            }
+
+
+@app.route('/characters/<id>', methods=['DELETE'])
+def delete_character(id):
+    character = Character.query.get(id)
+    if character is None:
         return {"error": "not found"}
-    db.session.delete(drink)
+    message = {"message": character.character_json['name'] + " just got ZA HANDED"}
+    db.session.delete(character)
     db.session.commit()
-    return {"message": "yeet!"} 
+    return message

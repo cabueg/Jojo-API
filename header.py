@@ -1,4 +1,4 @@
-import requests
+import requests, json
 from bs4 import BeautifulSoup
 
 #returns a string of character name
@@ -56,10 +56,17 @@ def get_character_info(link_to_character_page):
     character_Namesake = find_character_namesakes(character_Page)
     character_Stand = find_character_stand(character_Page)
 
-    print(character_Name)
-    print(character_Namesake)
-    print(character_Stand)
-    print()
+    character_json = {
+        "name": character_Name,
+        "stand": character_Stand,
+        "namesake": character_Namesake
+    }
+
+    character_json = json.dumps(character_json)
+
+
+    #insert post request here
+    
     
 
 
