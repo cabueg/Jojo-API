@@ -10,10 +10,12 @@ db = SQLAlchemy(app)
 
 class Character(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    character_json = db.Column(JSON)
+    name = db.Column(db.String(128))
+    stand = db.Column(db.String(255), nullable=True)
+    namesake = db.Column(db.PickleType, nullable=True)
 
     def __repr__(self):
-        return f"{self.character_json['name']} - {self.character_json['stand']} - {self.character_json['namesake']}"
+        return f"{self.name} - {self.stand} - {self.namesake}"
 
 
 @app.route('/')
@@ -31,9 +33,9 @@ def get_characters():
 
     #for each character, create a dictionary with each object's data and append to list
     for character in characters:
-        character_data = {'name': character.character_json['name'], 
-                          'stand': character.character_json['stand'], 
-                          'namesake': character.character_json['namesake']}
+        character_data = {'name': character.name, 
+                          'stand': character.stand, 
+                          'namesake': character.namesake}
         output.append(character_data)
 
     #return a dictionary with the list
@@ -41,7 +43,9 @@ def get_characters():
 
 @app.route('/characters', methods=['POST'])
 def add_character():
-    character = Character(character_json = request.json)
+    character = Character(name = request.json['name'],
+                          stand = request.json['stand'],
+                          namesake = request.json['namesake'])
     db.session.add(character)
     db.session.commit()
     return {'id': character.id}
@@ -50,9 +54,9 @@ def add_character():
 @app.route('/characters/<id>')
 def get_character(id):
     character = Character.query.get_or_404(id)
-    return {"name": character.character_json['name'], 
-            "stand": character.character_json['stand'], 
-            "namesake": character.character_json['namesake']
+    return {"name": character.name, 
+            "stand": character.stand, 
+            "namesake": character.namesake
             }
 
 
@@ -61,7 +65,7 @@ def delete_character(id):
     character = Character.query.get(id)
     if character is None:
         return {"error": "not found"}
-    message = {"message": character.character_json['name'] + " just got ZA HANDED"}
+    message = {"message": character.name + " just got ZA HANDED"}
     db.session.delete(character)
     db.session.commit()
     return message

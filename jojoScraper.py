@@ -3,8 +3,8 @@ from bs4 import BeautifulSoup
 from header import *
 from multiprocessing import Pool
 
-part = 4
-while(part < 5):
+part = 3
+while(part < 4):
     response = requests.get(
     url= "https://jojo.fandom.com/wiki/Template:Part_"+ str(part) +"_Character_Table"
 )

@@ -62,10 +62,17 @@ def get_character_info(link_to_character_page):
         "namesake": character_Namesake
     }
 
-    character_json = json.dumps(character_json)
+
+    #posts the json to my local database
+    r = requests.post("http://127.0.0.1:5000/characters",json=character_json)
+
+    if r.status_code == 200:
+        print(character_Name + " has been added")
+    else:
+        print("OH NO!")
 
 
-    #insert post request here
+
     
     
 
